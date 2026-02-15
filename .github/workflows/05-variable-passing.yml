@@ -1,3 +1,6 @@
+# .github/workflows/job-vars-sharing.yml
+# Intra-job: GITHUB_ENV + GITHUB_OUTPUT demo
+
 name: Job Variable Sharing
 
 on: [push]
@@ -47,4 +50,7 @@ jobs:
     needs: job1-generate
     runs-on: ubuntu-latest
     steps:
-    - run: echo "Inter-job: ${{ needs.job1-generate.outputs.version }}"
+    - name: Debug job info
+      env:
+        JOB_VERSION: ${{ needs.job1-generate.outputs.version }}
+      run: 'echo "Version from job1: $JOB_VERSION"'
