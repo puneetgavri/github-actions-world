@@ -8,10 +8,6 @@ on:
       - 'main'
       - 'develop'
       - 'release/**'
-    paths:
-      - '**.tf'      # Terraform files
-      - '**.yaml'    # Kubernetes manifests
-      - 'src/**'     # Source code
     paths-ignore:
       - 'docs/**'    # Ignore docs
       - 'README.md'
@@ -23,8 +19,6 @@ on:
     paths:
       - '**.tf'
       - 'k8s/**'      # Kubernetes configs
-    paths-ignore:
-      - '*.md'
 
   ### https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows#schedule
   # schedule:
