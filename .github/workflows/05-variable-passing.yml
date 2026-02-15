@@ -1,0 +1,50 @@
+name: Job Variable Sharing
+
+on: [push]
+
+jobs:
+  # INTRA-JOB: Both GITHUB_ENV + GITHUB_OUTPUT
+  intra-job:
+    runs-on: ubuntu-latest
+    steps:
+    # Step 1: Set BOTH env var AND step output
+    - name: Set variables
+      id: vars
+      run: |
+        BUILD_NUM=$(date +%s)
+        VERSION="v1.0.$GITHUB_RUN_NUMBER"
+        
+        # GITHUB_OUTPUT: Step-to-step reference
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "build-num=$BUILD_NUM" >> $GITHUB_OUTPUT
+        
+        # GITHUB_ENV: Direct env var access
+        echo "BUILD_NUM=$BUILD_NUM" >> $GITHUB_ENV
+        echo "APP_VERSION=$VERSION" >> $GITHUB_ENV
+    
+    # Step 2a: Use GITHUB_OUTPUT (step reference)
+    - name: Use step outputs
+      run: |
+        echo "From OUTPUT: ${{ steps.vars.outputs.version }}"
+        echo "From OUTPUT: ${{ steps.vars.outputs.build-num }}"
+    
+    # Step 2b: Use GITHUB_ENV (direct env var)
+    - name: Use env vars
+      run: |
+        echo "From ENV: $BUILD_NUM"
+        echo "From ENV: $APP_VERSION"
+
+  # INTER-JOB: Unchanged (outputs only)
+  job1-generate:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+    - id: set-version
+      run: echo "version=v1.0.${{ github.run_number }}" >> $GITHUB_OUTPUT
+
+  job2-use:
+    needs: job1-generate
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "Inter-job: ${{ needs.job1-generate.outputs.version }}"
