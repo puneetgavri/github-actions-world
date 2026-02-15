@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  say-hello-inline-bash:
+  say-hello:
     runs-on: ubuntu-24.04
     steps:
       - run: echo "Hello from GitHub Action Workflow!"
